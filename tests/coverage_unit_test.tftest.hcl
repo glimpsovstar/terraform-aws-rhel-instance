@@ -164,3 +164,16 @@ run "required_tags_are_always_present" {
     error_message = "Every tag the organisation's tflint ruleset requires must be present."
   }
 }
+
+run "user_data_enables_linger_for_the_automation_user" {
+  command = plan
+
+  variables {
+    vault_ssh_ca_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAB dummy"
+  }
+
+  assert {
+    condition     = strcontains(aws_instance.this.user_data, "enable-linger")
+    error_message = "Rootless containers started by automation die when the SSH session ends unless the user lingers."
+  }
+}

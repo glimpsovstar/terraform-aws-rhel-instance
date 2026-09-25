@@ -4,6 +4,19 @@ All notable changes to this module are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning is
 [semantic](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-09-25
+
+### Fixed
+
+- `user_data` now runs `loginctl enable-linger` for `ansible_user`. Without it, rootless
+  containers started by automation are killed when the SSH session that started them closes:
+  the playbook reports success and the service is gone moments later. Found while rehearsing
+  Demo 1 Part A, where an httpd container started cleanly and then answered nothing.
+
+### Added
+
+- Test asserting `enable-linger` is present in `user_data` (22 unit tests total).
+
 ## [1.1.0] - 2026-09-25
 
 ### Added

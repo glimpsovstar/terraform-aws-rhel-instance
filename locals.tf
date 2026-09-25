@@ -44,5 +44,11 @@ locals {
       || echo 'TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem' >> /etc/ssh/sshd_config
 
     systemctl restart sshd
+
+    # Rootless containers started by automation are owned by this user's
+    # systemd session. Without lingering that session is torn down when the
+    # SSH connection closes, and anything it started dies with it - the
+    # playbook reports success and the service is gone moments later.
+    loginctl enable-linger "${var.ansible_user}"
   EOT
 }
