@@ -1,0 +1,63 @@
+# Integration tests against real AWS. Manual trigger only - these create and
+# destroy a real EC2 instance, so they must never fire automatically on a PR.
+#
+# Authentication is OIDC into arn:aws:iam::521614675974:role/GitHubActionsRole,
+# whose trust policy allows repo:glimpsovstar/*. No static credentials.
+
+name: integration
+
+on:
+  workflow_dispatch:
+    inputs:
+      aws_region:
+        description: AWS region
+        required: false
+        default: ap-southeast-2
+      key_pair_name:
+        description: Existing EC2 key pair
+        required: false
+        default: djoo-demo-ec2-keypair
+
+permissions:
+  id-token: write # required to request the OIDC token
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::521614675974:role/GitHubActionsRole
+          aws-region: ${{ inputs.aws_region }}
+
+      # Discovered rather than hardcoded, so the workflow keeps working if the
+      # account's networking changes.
+      - name: Discover network
+        id: net
+        run: |
+          VPC=$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true \
+                  --query 'Vpcs[0].VpcId' --output text)
+          SUBNET=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPC" \
+                  --query 'Subnets[0].SubnetId' --output text)
+          echo "vpc_id=$VPC"       >> "$GITHUB_OUTPUT"
+          echo "subnet_id=$SUBNET" >> "$GITHUB_OUTPUT"
+          echo "Using VPC $VPC subnet $SUBNET"
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+
+      - name: Init
+        run: terraform init -backend=false
+
+      # Terraform destroys what it created when the file finishes, including
+      # on failure.
+      - name: Integration tests
+        run: |
+          terraform test -test-directory=tests-integration \
+            -var="vpc_id=${{ steps.net.outputs.vpc_id }}" \
+            -var="subnet_id=${{ steps.net.outputs.subnet_id }}" \
+            -var="key_pair_name=${{ inputs.key_pair_name }}"

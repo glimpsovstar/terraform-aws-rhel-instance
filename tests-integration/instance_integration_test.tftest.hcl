@@ -9,6 +9,11 @@
 # Terraform destroys everything it created when the file finishes, including
 # on failure.
 
+# A module must not configure its own provider, so the integration run
+# configures it here. Region and credentials come from the environment, which
+# aws-actions/configure-aws-credentials sets from the assumed role.
+provider "aws" {}
+
 variables {
   instance_name = "tftest-integration"
   environment   = "Dev"
