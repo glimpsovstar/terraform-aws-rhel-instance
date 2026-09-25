@@ -31,6 +31,16 @@ jobs:
       - name: Lint
         run: tflint --recursive
 
-      # Tests use mock_provider, so no cloud credentials are needed.
-      - name: Test
+      # Unit tests only. They use mock_provider, so CI needs no cloud
+      # credentials and creates nothing billable. Integration tests live in
+      # tests-integration/ and are run deliberately, not on every PR.
+      - name: Unit tests
         run: terraform test
+
+      - name: Validate examples
+        run: |
+          for d in examples/*/; do
+            echo "== $d"
+            terraform -chdir="$d" init -backend=false
+            terraform -chdir="$d" validate
+          done

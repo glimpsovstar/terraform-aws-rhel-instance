@@ -77,16 +77,36 @@ per-request self-service workspace without either inheriting the other's assumpt
 
 Widening `ssh_ingress_cidr` is a deliberate decision by the caller, not a default.
 
-## Development
+## Testing
+
+Unit tests and integration tests are separated so the fast, free ones run on every PR and
+the ones that cost money are run deliberately.
+
+| | Location | Mode | Count | Needs AWS |
+|---|---|---|---|---|
+| Unit | `tests/` | `plan` + `mock_provider` | 21 | no |
+| Integration | `tests-integration/` | `apply` | 3 | **yes** |
 
 ```bash
 terraform fmt -check -recursive
 terraform init -backend=false && terraform validate
 tflint --recursive
-terraform test          # 11 tests, mock_provider, no cloud credentials needed
+
+# Unit - what CI runs. No credentials, nothing created.
+terraform test
+
+# Integration - creates and destroys real EC2. Costs money.
+terraform test -test-directory=tests-integration \
+  -var=vpc_id=vpc-xxxx -var=subnet_id=subnet-xxxx -var=key_pair_name=your-key
 ```
 
-Tests run against `mock_provider`, so CI needs no AWS access and creates nothing billable.
+Unit tests cover sizing, tag merging, the AMI override path, private placement, extra
+security groups, `user_data` in both directions, and rejection of every invalid input the
+variable validations promise to catch.
+
+Integration tests assert what plan mode cannot: that the instance reaches `running`, that a
+public IP is really assigned, and that the AMI lookup resolves a real image. Terraform
+destroys what it created when the file finishes, including on failure.
 
 ## Examples
 
