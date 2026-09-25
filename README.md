@@ -108,6 +108,13 @@ Integration tests assert what plan mode cannot: that the instance reaches `runni
 public IP is really assigned, and that the AMI lookup resolves a real image. Terraform
 destroys what it created when the file finishes, including on failure.
 
+## Publishing
+
+This module uses **branch-based publishing** in HCP Terraform, not tags. A version is
+published by nominating a commit on `main`, which lets HCP Terraform run the module's tests
+before the version exists. Repository tags are kept for human reference but no longer drive
+publication.
+
 ## Examples
 
 - [`examples/basic`](examples/basic) — minimal
