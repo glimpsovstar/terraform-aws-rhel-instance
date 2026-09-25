@@ -1,14 +1,18 @@
-# Red Hat's public AWS account. Looked up rather than pinned so the module does
-# not break when an AMI is deregistered.
+# HashiCorp approved base images, not Red Hat's public account.
+#
+# The approved base carries the Uptycs EDR agent, which is what satisfies
+# HC-COMPUTE-011. Building from Red Hat's public RHEL 9 produces an instance
+# with no EDR and gets flagged by security - see pkr-RHEL9-SOE commit a40e12a,
+# which made this same correction for the SOE image.
 data "aws_ami" "rhel9" {
   count = var.ami_id == "" ? 1 : 0
 
   most_recent = true
-  owners      = ["309956199498"]
+  owners      = [var.ami_owner]
 
   filter {
     name   = "name"
-    values = ["RHEL-9.*_HVM-*-x86_64-*"]
+    values = [var.ami_name_filter]
   }
 
   filter {

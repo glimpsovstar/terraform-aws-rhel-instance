@@ -65,9 +65,21 @@ variable "root_volume_size" {
 }
 
 variable "ami_id" {
-  description = "AMI to launch. Leave empty to look up the latest Red Hat published RHEL 9 image."
+  description = "AMI to launch. Leave empty to look up the latest approved base image."
   type        = string
   default     = ""
+}
+
+variable "ami_owner" {
+  description = "AWS account owning the base image. Defaults to the HashiCorp ami-prod account, whose images carry the Uptycs EDR agent required by HC-COMPUTE-011. Do not point this at Red Hat's public account without checking your EDR obligations."
+  type        = string
+  default     = "888995627335"
+}
+
+variable "ami_name_filter" {
+  description = "Name filter for the base image lookup."
+  type        = string
+  default     = "hc-base-rhel-9*-x86_64-*"
 }
 
 # ---------------------------------------------------------------------------

@@ -177,3 +177,12 @@ run "user_data_enables_linger_for_the_automation_user" {
     error_message = "Rootless containers started by automation die when the SSH session ends unless the user lingers."
   }
 }
+
+run "ami_lookup_defaults_to_the_approved_base_account" {
+  command = plan
+
+  assert {
+    condition     = data.aws_ami.rhel9[0].owners[0] == "888995627335"
+    error_message = "Must default to the HashiCorp approved base account. Red Hat's public RHEL 9 has no EDR agent and breaches HC-COMPUTE-011."
+  }
+}

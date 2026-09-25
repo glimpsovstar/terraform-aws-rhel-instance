@@ -4,6 +4,21 @@ All notable changes to this module are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning is
 [semantic](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-09-25
+
+### Fixed
+
+- **Security: the default AMI lookup no longer uses Red Hat's public account.** It now uses
+  the HashiCorp approved base images (`hc-base-rhel-9*-x86_64-*`, owner `888995627335`),
+  whose images carry the Uptycs EDR agent required by **HC-COMPUTE-011**. Building from
+  Red Hat's public RHEL 9 produces an instance with no EDR and is flagged by security.
+  `pkr-RHEL9-SOE` made the same correction in commit `a40e12a`.
+
+### Added
+
+- `ami_owner` and `ami_name_filter` so the base image source is explicit and overridable.
+- Test asserting the lookup defaults to the approved account (23 unit tests total).
+
 ## [1.2.0] - 2026-09-25
 
 ### Fixed

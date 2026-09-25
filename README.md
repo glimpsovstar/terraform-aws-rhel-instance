@@ -49,7 +49,9 @@ per-request self-service workspace without either inheriting the other's assumpt
 | `environment` | string | `Dev` | `Dev`, `Test` or `Prod` |
 | `instance_size` | string | `Small` | `Small`, `Medium`, `Large` |
 | `root_volume_size` | number | `20` | GiB, 10–1000 |
-| `ami_id` | string | `""` | Empty looks up the latest Red Hat published RHEL 9 |
+| `ami_id` | string | `""` | Empty looks up the latest approved base image |
+| `ami_owner` | string | `888995627335` | HashiCorp ami-prod. Its images carry the Uptycs EDR agent required by HC-COMPUTE-011 |
+| `ami_name_filter` | string | `hc-base-rhel-9*-x86_64-*` | Base image name filter |
 | `ssh_ingress_cidr` | string | `192.168.0.0/24` | CIDR allowed to reach SSH |
 | `vault_ssh_ca_public_key` | string | `""` | When set, `user_data` installs it as a trusted user CA |
 | `ansible_user` | string | `aap` | Automation user created and trusted against the CA |
