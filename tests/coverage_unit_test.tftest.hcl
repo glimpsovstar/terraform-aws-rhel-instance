@@ -15,7 +15,7 @@ variables {
   key_pair_name = "demo-key"
 }
 
-run "large_resolves_to_t3_medium" {
+run "large_resolves_to_t3_large" {
   command = plan
 
   variables {
@@ -23,8 +23,8 @@ run "large_resolves_to_t3_medium" {
   }
 
   assert {
-    condition     = aws_instance.this.instance_type == "t3.medium"
-    error_message = "Large must resolve to t3.medium."
+    condition     = aws_instance.this.instance_type == "t3.large"
+    error_message = "Large must resolve to t3.large."
   }
 }
 

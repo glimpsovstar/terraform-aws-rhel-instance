@@ -1,10 +1,13 @@
 locals {
   # T-shirt sizes keep consumer-facing choices readable and stop requesters
   # inventing instance types nobody costed or approved.
+  # t3.micro is deliberately absent. At 1 GiB the OOM killer takes the workload
+  # during "Install Podman", so offering it as a tier only sells a size that
+  # cannot run anything - the failure lands on the consumer, not here.
   instance_type = {
-    Small  = "t3.micro"
-    Medium = "t3.small"
-    Large  = "t3.medium"
+    Small  = "t3.small"
+    Medium = "t3.medium"
+    Large  = "t3.large"
   }[var.instance_size]
 
   ami_id = var.ami_id != "" ? var.ami_id : data.aws_ami.rhel9[0].id

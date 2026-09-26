@@ -20,8 +20,8 @@ run "defaults_are_small_encrypted_and_imdsv2" {
   command = plan
 
   assert {
-    condition     = aws_instance.this.instance_type == "t3.micro"
-    error_message = "Small must resolve to t3.micro."
+    condition     = aws_instance.this.instance_type == "t3.small"
+    error_message = "Small must resolve to t3.small."
   }
 
   assert {
@@ -44,7 +44,7 @@ run "ssh_is_not_open_to_the_world_by_default" {
   }
 }
 
-run "medium_resolves_to_t3_small" {
+run "medium_resolves_to_t3_medium" {
   command = plan
 
   variables {
@@ -52,8 +52,8 @@ run "medium_resolves_to_t3_small" {
   }
 
   assert {
-    condition     = aws_instance.this.instance_type == "t3.small"
-    error_message = "Medium must resolve to t3.small."
+    condition     = aws_instance.this.instance_type == "t3.medium"
+    error_message = "Medium must resolve to t3.medium."
   }
 }
 
